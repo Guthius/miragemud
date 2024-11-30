@@ -4,6 +4,7 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using MirageMud.Server;
 using MirageMud.Server.Domain.Services;
+using MirageMud.Server.Infrastructure;
 using MirageMud.Server.Infrastructure.Contexts;
 using MirageMud.Server.Net;
 using MirageMud.Server.Services;
@@ -27,11 +28,6 @@ builder.Services.AddGameService<MudClient>();
 
 var app = builder.Build();
 
-using (var serviceScope = app.Services.CreateScope())
-{
-    var context = serviceScope.ServiceProvider.GetRequiredService<AccountDbContext>();
-
-    await context.Database.EnsureCreatedAsync();
-}
+await app.EnsureDatabaseCreated<AccountDbContext>();
 
 await app.RunAsync();
