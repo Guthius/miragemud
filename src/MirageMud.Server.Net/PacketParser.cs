@@ -87,7 +87,7 @@ internal sealed class PacketParser(ILogger logger)
         }
         else
         {
-            logger.LogInformation("Client XX send a unknown packet with ID {PacketId}", packetId);
+            logger.LogInformation("Received a unknown packet with ID {PacketId}", packetId);
         }
     }
 }

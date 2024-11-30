@@ -8,6 +8,10 @@
     </PropertyGroup>
 
     <ItemGroup>
+      <PackageReference Include="Microsoft.EntityFrameworkCore.Design" Version="9.0.0">
+        <PrivateAssets>all</PrivateAssets>
+        <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+      </PackageReference>
       <PackageReference Include="Microsoft.Extensions.Hosting" Version="9.0.0" />
       <PackageReference Include="Serilog" Version="4.1.0" />
       <PackageReference Include="Serilog.Extensions.Hosting" Version="8.0.0" />
@@ -15,11 +19,18 @@
     </ItemGroup>
 
     <ItemGroup>
+      <ProjectReference Include="..\MirageMud.Server.Infrastructure\MirageMud.Server.Infrastructure.csproj" />
       <ProjectReference Include="..\MirageMud.Server.Net\MirageMud.Server.Net.csproj" />
     </ItemGroup>
 
     <ItemGroup>
       <Folder Include="Protocol\" />
+    </ItemGroup>
+
+    <ItemGroup>
+      <None Update="appsettings.json">
+        <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+      </None>
     </ItemGroup>
 
 </Project>
