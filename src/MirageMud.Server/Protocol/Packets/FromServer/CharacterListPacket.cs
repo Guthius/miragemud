@@ -1,11 +1,11 @@
-﻿using MirageMud.Server.Dtos;
+﻿using MirageMud.Server.Features.Characters.Dtos;
 using MirageMud.Server.Net;
 
 namespace MirageMud.Server.Protocol.Packets.FromServer;
 
 public sealed record CharacterListPacket(List<CharacterSlotDto> Characters) : IPacket<CharacterListPacket>
 {
-    public const int Id = 2;
+    private const int UnknownCharacterId = -1;
 
     public static CharacterListPacket ReadFrom(IPacketReader reader)
     {
@@ -14,6 +14,7 @@ public sealed record CharacterListPacket(List<CharacterSlotDto> Characters) : IP
         for (var i = 0; i < Limits.MaxCharacters; ++i)
         {
             var character = new CharacterSlotDto(
+                UnknownCharacterId,
                 reader.ReadInt32(),
                 reader.ReadString(),
                 reader.ReadString(),
@@ -27,7 +28,7 @@ public sealed record CharacterListPacket(List<CharacterSlotDto> Characters) : IP
 
     public void WriteTo(IPacketWriter writer)
     {
-        writer.WriteInt16(Id);
+        writer.WriteInt16(PacketId.FromServer.CharacterList);
 
         foreach (var character in Characters)
         {

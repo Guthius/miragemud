@@ -2,60 +2,69 @@
 
 namespace MirageMud.Server.Net;
 
-
-internal sealed class PacketParser(ILogger logger)
+internal sealed class PacketParser<TClientState>(ILogger logger) where TClientState : Enum
 {
     private const int BufferSize = 4096;
 
     private readonly byte[] _buffer = new byte[BufferSize];
-    private readonly Dictionary<int, Action<ReadOnlySpan<byte>>> _handlers = [];
-    private int _count;
+    private readonly Dictionary<int, Func<ReadOnlySpan<byte>, Task>> _handlers = [];
+    private int _bytesReceived;
 
-    public void Bind<TPacket>(int packetId, Action<TPacket> handler) where TPacket : IPacket<TPacket>
+    private static int UniqueId(TClientState state, int packetId)
     {
-        _handlers[packetId] = bytes =>
+        return ((int) (object) state & 0xFFFF) << 16 | (packetId & 0xFFFF);
+    }
+
+    public void Bind<TPacket>(TClientState state, int packetId, Func<TPacket, Task> handler) where TPacket : IPacket<TPacket>
+    {
+        _handlers[UniqueId(state, packetId)] = bytes =>
         {
             var packetReader = new PacketReader(bytes);
             var packet = TPacket.ReadFrom(packetReader);
 
-            handler.Invoke(packet);
+            return handler.Invoke(packet);
         };
     }
 
-    public void Parse(ReadOnlySpan<byte> bytes)
+    public void Bind(TClientState state, int packetId, Func<Task> handler)
     {
-        var bytesAvailable = _buffer.Length - _count;
-        if (bytes.Length > bytesAvailable)
+        _handlers[UniqueId(state, packetId)] = _ => handler.Invoke();
+    }
+
+    public async Task Parse(TClientState state, byte[] bytes, int offset, int count)
+    {
+        var bytesAvailable = _buffer.Length - _bytesReceived;
+        if (count > bytesAvailable)
         {
             throw new Exception("Buffer overflow");
         }
 
-        bytes.CopyTo(_buffer.AsSpan(_count));
+        bytes.AsSpan(offset, count).CopyTo(_buffer.AsSpan(_bytesReceived));
 
-        _count += bytes.Length;
+        _bytesReceived += count;
 
-        ProcessBytes();
+        await ProcessBytes(state);
     }
 
-    private void ProcessBytes()
+    private async Task ProcessBytes(TClientState state)
     {
         var bytesProcessed = 0;
+        var bytesLeft = _bytesReceived;
 
-        var buffer = _buffer.AsSpan(0, _count);
-        while (buffer.Length >= 2)
+        while (bytesLeft - bytesProcessed >= 2)
         {
-            var len = BitConverter.ToInt16(buffer);
-            buffer = buffer[2..];
+            var len = BitConverter.ToInt16(_buffer, bytesProcessed);
 
-            if (buffer.Length < len)
+            bytesLeft -= 2;
+            if (bytesLeft < len)
             {
                 break;
             }
 
-            ProcessPacket(buffer[..len]);
+            await ProcessPacket(state, _buffer, bytesProcessed + 2, len);
 
-            buffer = buffer[len..];
             bytesProcessed += 2 + len;
+            bytesLeft -= len;
         }
 
         if (bytesProcessed == 0)
@@ -63,27 +72,28 @@ internal sealed class PacketParser(ILogger logger)
             return;
         }
 
-        var bytesLeft = _count - bytesProcessed;
         if (bytesLeft > 0)
         {
             Buffer.BlockCopy(_buffer, bytesProcessed, _buffer, 0, bytesLeft);
         }
 
-        _count -= bytesProcessed;
+        _bytesReceived -= bytesProcessed;
     }
 
-    private void ProcessPacket(ReadOnlySpan<byte> bytes)
+    private async Task ProcessPacket(TClientState state, byte[] bytes, int offset, int count)
     {
-        if (bytes.Length < 2)
+        var packet = bytes.AsSpan(offset, count);
+        if (packet.Length < 2)
         {
             return;
         }
 
-        var packetId = BitConverter.ToInt16(bytes);
+        var packetId = BitConverter.ToInt16(packet);
+        var packetIdUnique = UniqueId(state, packetId);
 
-        if (_handlers.TryGetValue(packetId, out var handler))
+        if (_handlers.TryGetValue(packetIdUnique, out var handler))
         {
-            handler.Invoke(bytes[2..]);
+            await handler.Invoke(packet[2..]);
         }
         else
         {

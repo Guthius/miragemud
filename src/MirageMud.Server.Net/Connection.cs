@@ -6,26 +6,58 @@ using MirageMud.Server.Net.Extensions;
 
 namespace MirageMud.Server.Net;
 
-public abstract class Connection<TClient>(ILogger logger) : IConnection where TClient : Connection<TClient>
+public abstract class Connection<TClient, TClientState>(ILogger logger)
+    : IConnection where TClient : Connection<TClient, TClientState> where TClientState : Enum
 {
     private const int BufferSize = 4096;
     private const int PacketHeaderSize = 2;
 
     private sealed record ConnectionState(Socket Socket, string SocketAddr, byte[] ReceiveBuffer);
 
-    private readonly PacketParser _parser = new(logger);
+    private readonly PacketParser<TClientState> _parser = new(logger);
     private readonly Lock _packetBufferLock = new();
     private readonly BufferedPacketWriter _packetBuffer = new(BufferSize);
     private readonly ConcurrentQueue<byte[]> _sendBuffer = new();
-    private Server<TClient>? _server;
+    private Server<TClient, TClientState>? _server;
     private bool _closed;
     private int _id;
     private Socket? _socket;
     private bool _sending;
+    private TClientState _state;
 
-    protected void Bind<TPacket>(int packetId, Action<TPacket> handler) where TPacket : IPacket<TPacket>
+    protected void SetState(TClientState state)
     {
-        _parser.Bind(packetId, handler);
+        _state = state;
+    }
+
+    protected sealed class StateBinder(Connection<TClient, TClientState> connection, TClientState state)
+    {
+        public void Bind<TPacket>(int packetId, Func<TPacket, Task> handler) where TPacket : IPacket<TPacket>
+        {
+            connection.Bind(state, packetId, handler);
+        }
+
+        public void Bind(int packetId, Func<Task> handler)
+        {
+            connection.Bind(state, packetId, handler);
+        }
+    }
+
+    protected void When(TClientState state, Action<StateBinder> action)
+    {
+        var stateBinder = new StateBinder(this, state);
+
+        action(stateBinder);
+    }
+
+    protected void Bind<TPacket>(TClientState state, int packetId, Func<TPacket, Task> handler) where TPacket : IPacket<TPacket>
+    {
+        _parser.Bind(state, packetId, handler);
+    }
+
+    protected void Bind(TClientState state, int packetId, Func<Task> handler)
+    {
+        _parser.Bind(state, packetId, handler);
     }
 
     public void Send(IPacket packet)
@@ -70,7 +102,7 @@ public abstract class Connection<TClient>(ILogger logger) : IConnection where TC
         Close();
     }
 
-    internal void Run(Server<TClient> server, int id, Socket socket)
+    internal void Run(Server<TClient, TClientState> server, int id, Socket socket)
     {
         _server = server;
         _id = id;
@@ -105,7 +137,9 @@ public abstract class Connection<TClient>(ILogger logger) : IConnection where TC
                 return;
             }
 
-            _parser.Parse(state.ReceiveBuffer.AsSpan(0, bytesReceived));
+            var task = _parser.Parse(_state, state.ReceiveBuffer, 0, bytesReceived);
+
+            task.Wait();
 
             state.Socket.BeginReceive(
                 state.ReceiveBuffer,

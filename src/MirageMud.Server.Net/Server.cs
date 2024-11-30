@@ -8,11 +8,14 @@ using Microsoft.Extensions.Logging;
 
 namespace MirageMud.Server.Net;
 
-public sealed class Server<TClient>(ILogger<Server<TClient>> logger, IConfiguration configuration, IServiceProvider serviceProvider) : BackgroundService, IServer<TClient> where TClient : Connection<TClient>
+public sealed class Server<TClient, TClientState>(ILogger<Server<TClient, TClientState>> logger, IConfiguration configuration, IServiceProvider serviceProvider)
+    : BackgroundService, IServer<TClient, TClientState>
+    where TClient : Connection<TClient, TClientState>
+    where TClientState : Enum
 {
     private const int DefaultPort = 7777;
     private const int DefaultMaxConnections = 100;
-    
+
     private readonly int _port = configuration.GetValue("Port", DefaultPort);
     private readonly int _maxConnections = configuration.GetValue("MaxConnections", DefaultMaxConnections);
     private readonly ConcurrentQueue<int> _clientIds = [];

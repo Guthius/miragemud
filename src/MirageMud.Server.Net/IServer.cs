@@ -1,6 +1,8 @@
 ﻿namespace MirageMud.Server.Net;
 
-public interface IServer<out TConnection> where TConnection : Connection<TConnection>
+public interface IServer<out TClient, TClientState>
+    where TClient : Connection<TClient, TClientState>
+    where TClientState : Enum
 {
-    void SendTo(IPacket packet, Func<TConnection, bool> predicate);
+    void SendTo(IPacket packet, Func<TClient, bool> predicate);
 }

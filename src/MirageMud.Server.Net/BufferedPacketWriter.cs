@@ -59,14 +59,14 @@ internal sealed class BufferedPacketWriter(int bufferSize) : IPacketWriter
     {
         EnsureSpace(4);
         BitConverter.TryWriteBytes(_buffer.AsSpan(_pos), value);
-        _pos += 2;
+        _pos += 4;
     }
 
     public void WriteUInt32(int value)
     {
         EnsureSpace(4);
         BitConverter.TryWriteBytes(_buffer.AsSpan(_pos), value);
-        _pos += 2;
+        _pos += 4;
     }
 
     public void WriteSingle(float value)

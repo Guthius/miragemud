@@ -3,6 +3,7 @@
 internal enum MudClientState
 {
     Connected,
+    Authenticated,
     InGame,
     Disconnected
 }

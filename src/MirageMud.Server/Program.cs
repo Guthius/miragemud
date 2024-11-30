@@ -1,33 +1,43 @@
-﻿using Microsoft.EntityFrameworkCore;
+﻿using System.Reflection;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using MirageMud.Server;
-using MirageMud.Server.Domain.Services;
-using MirageMud.Server.Infrastructure;
-using MirageMud.Server.Infrastructure.Contexts;
+using MirageMud.Server.Extensions;
+using MirageMud.Server.Features.Accounts;
+using MirageMud.Server.Features.Characters;
 using MirageMud.Server.Net;
-using MirageMud.Server.Services;
 using Serilog;
 
 var builder = Host.CreateApplicationBuilder(args);
 
 builder.Services.AddSerilog(
     logger => logger
-        .MinimumLevel.Verbose()
+        .MinimumLevel.Information()
         .WriteTo.Console());
 
 builder.Services.AddDbContext<AccountDbContext>(
-    options => options.UseSqlite(
-        builder.Configuration.GetConnectionString("AccountsDb")),
+    options => options
+        .UseSqlite(
+            builder.Configuration.GetConnectionString("AccountsDb"))
+        .UseSnakeCaseNamingConvention(),
     ServiceLifetime.Singleton);
 
-builder.Services.AddTransient<IAccountService, AccountService>();
+builder.Services.AddDbContext<CharacterDbContext>(
+    options => options
+        .UseSqlite(
+            builder.Configuration.GetConnectionString("CharactersDb"))
+        .UseSnakeCaseNamingConvention(),
+    ServiceLifetime.Singleton);
 
-builder.Services.AddGameService<MudClient>();
+builder.Services.AddMemoryCache();
+builder.Services.AddMediatR(options => options.RegisterServicesFromAssembly(Assembly.GetExecutingAssembly()));
+
+builder.Services.AddGameService<MudClient, MudClientState>();
 
 var app = builder.Build();
 
 await app.EnsureDatabaseCreated<AccountDbContext>();
+await app.EnsureDatabaseCreated<CharacterDbContext>();
 
 await app.RunAsync();

@@ -4,8 +4,6 @@ namespace MirageMud.Server.Protocol.Packets.FromClient;
 
 public sealed record LoginPacket(string AccountName, string Password, Version ClientVersion) : IPacket<LoginPacket>
 {
-    public const int Id = 4;
-    
     public static LoginPacket ReadFrom(IPacketReader reader)
     {
         var accountName = reader.ReadString();
@@ -17,7 +15,7 @@ public sealed record LoginPacket(string AccountName, string Password, Version Cl
     
     public void WriteTo(IPacketWriter writer)
     {
-        writer.WriteInt16(Id);
+        writer.WriteInt16(PacketId.FromClient.Login);
         writer.WriteString(AccountName);
         writer.WriteString(Password);
         writer.WriteByte((byte) ClientVersion.Major);

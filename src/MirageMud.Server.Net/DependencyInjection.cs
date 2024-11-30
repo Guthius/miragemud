@@ -4,11 +4,12 @@ namespace MirageMud.Server.Net;
 
 public static class DependencyInjection
 {
-    public static IServiceCollection AddGameService<TConnection>(this IServiceCollection services)
-        where TConnection : Connection<TConnection>
+    public static IServiceCollection AddGameService<TClient, TClientState>(this IServiceCollection services)
+        where TClient : Connection<TClient, TClientState>
+        where TClientState : Enum
     {
-        services.AddTransient<TConnection>();
-        services.AddHostedService<Server<TConnection>>();
+        services.AddTransient<TClient>();
+        services.AddHostedService<Server<TClient, TClientState>>();
 
         return services;
     }

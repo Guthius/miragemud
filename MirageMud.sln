@@ -6,10 +6,6 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "src", "src", "{69BEB68D-C13
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MirageMud.Server.Net", "src\MirageMud.Server.Net\MirageMud.Server.Net.csproj", "{EEE2A1FB-2779-4B21-8BCA-497CC2C1BA6D}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MirageMud.Server.Infrastructure", "src\MirageMud.Server.Infrastructure\MirageMud.Server.Infrastructure.csproj", "{052F6ECA-0890-4DA5-AF46-711CA500BE60}"
-EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MirageMud.Server.Domain", "src\MirageMud.Server.Domain\MirageMud.Server.Domain.csproj", "{0DA0335B-83DA-46E2-9C63-7D74A061A8B0}"
-EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -24,19 +20,9 @@ Global
 		{EEE2A1FB-2779-4B21-8BCA-497CC2C1BA6D}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{EEE2A1FB-2779-4B21-8BCA-497CC2C1BA6D}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{EEE2A1FB-2779-4B21-8BCA-497CC2C1BA6D}.Release|Any CPU.Build.0 = Release|Any CPU
-		{052F6ECA-0890-4DA5-AF46-711CA500BE60}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{052F6ECA-0890-4DA5-AF46-711CA500BE60}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{052F6ECA-0890-4DA5-AF46-711CA500BE60}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{052F6ECA-0890-4DA5-AF46-711CA500BE60}.Release|Any CPU.Build.0 = Release|Any CPU
-		{0DA0335B-83DA-46E2-9C63-7D74A061A8B0}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{0DA0335B-83DA-46E2-9C63-7D74A061A8B0}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{0DA0335B-83DA-46E2-9C63-7D74A061A8B0}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{0DA0335B-83DA-46E2-9C63-7D74A061A8B0}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(NestedProjects) = preSolution
 		{94F3C714-8B9D-4FCF-AF41-4E33D116E0D1} = {69BEB68D-C134-4750-AFC5-81746DC22469}
 		{EEE2A1FB-2779-4B21-8BCA-497CC2C1BA6D} = {69BEB68D-C134-4750-AFC5-81746DC22469}
-		{052F6ECA-0890-4DA5-AF46-711CA500BE60} = {69BEB68D-C134-4750-AFC5-81746DC22469}
-		{0DA0335B-83DA-46E2-9C63-7D74A061A8B0} = {69BEB68D-C134-4750-AFC5-81746DC22469}
 	EndGlobalSection
 EndGlobal

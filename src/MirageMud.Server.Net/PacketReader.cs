@@ -36,14 +36,14 @@ internal sealed class PacketReader(ReadOnlySpan<byte> bytes) : IPacketReader
     public int ReadInt32()
     {
         var value = BitConverter.ToInt32(_bytes.AsSpan(_pos));
-        _pos += 2;
+        _pos += 4;
         return value;
     }
 
     public uint ReadUInt32()
     {
         var value = BitConverter.ToUInt32(_bytes.AsSpan(_pos));
-        _pos += 2;
+        _pos += 4;
         return value;
     }
 
