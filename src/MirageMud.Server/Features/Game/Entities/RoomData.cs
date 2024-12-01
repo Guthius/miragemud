@@ -2,7 +2,7 @@
 
 namespace MirageMud.Server.Features.Game.Entities;
 
-public sealed record Room
+public sealed record RoomData
 {
     public sealed record Item
     {

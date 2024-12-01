@@ -1,6 +1,6 @@
 ﻿namespace MirageMud.Server.Features.Game.Entities;
 
-public sealed record Shop
+public sealed record ShopData
 {
     public int Id { get; set; }
     public string Name { get; set; } = string.Empty;

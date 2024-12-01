@@ -2,13 +2,13 @@
 
 namespace MirageMud.Server.Features.Game.Entities.Configuration;
 
-internal sealed class NpcConfiguration : IEntityTypeConfiguration<Npc>
+internal sealed class NpcConfiguration : IEntityTypeConfiguration<NpcData>
 {
-    public void Configure(EntityTypeBuilder<Npc> builder)
+    public void Configure(EntityTypeBuilder<NpcData> builder)
     {
         builder.HasKey(npc => npc.Id);
 
-        builder.HasData(new Npc
+        builder.HasData(new NpcData
             {
                 Id = 1,
                 Name = "Bat",
@@ -22,7 +22,7 @@ internal sealed class NpcConfiguration : IEntityTypeConfiguration<Npc>
                 Strength = 2,
                 Defense = 2
             },
-            new Npc
+            new NpcData
             {
                 Id = 2,
                 Name = "Bartender",

@@ -3,9 +3,9 @@ using Microsoft.EntityFrameworkCore.Metadata.Builders;
 
 namespace MirageMud.Server.Features.Game.Entities.Configuration;
 
-internal sealed class RoomConfiguration : IEntityTypeConfiguration<Room>
+internal sealed class RoomConfiguration : IEntityTypeConfiguration<RoomData>
 {
-    public void Configure(EntityTypeBuilder<Room> builder)
+    public void Configure(EntityTypeBuilder<RoomData> builder)
     {
         builder.HasKey(room => room.Id);
 
@@ -17,9 +17,9 @@ internal sealed class RoomConfiguration : IEntityTypeConfiguration<Room>
         builder.Property(room => room.Items)
             .HasConversion(
                 items => JsonSerializer.Serialize(items, JsonSerializerOptions.Default),
-                json => JsonSerializer.Deserialize<Room.ItemInventory>(json, JsonSerializerOptions.Default)!);
+                json => JsonSerializer.Deserialize<RoomData.ItemInventory>(json, JsonSerializerOptions.Default)!);
 
-        builder.HasData(new Room
+        builder.HasData(new RoomData
             {
                 Id = 1,
                 Name = "Ebersmile Tavern",
@@ -33,7 +33,7 @@ internal sealed class RoomConfiguration : IEntityTypeConfiguration<Room>
                 Music = "town.mp3",
                 NpcIds = [2]
             },
-            new Room
+            new RoomData
             {
                 Id = 2,
                 Name = "Orsaf Street",

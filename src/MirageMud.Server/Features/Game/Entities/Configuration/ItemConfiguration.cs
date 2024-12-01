@@ -2,20 +2,20 @@
 
 namespace MirageMud.Server.Features.Game.Entities.Configuration;
 
-internal sealed class ItemConfiguration : IEntityTypeConfiguration<Item>
+internal sealed class ItemConfiguration : IEntityTypeConfiguration<ItemData>
 {
-    public void Configure(EntityTypeBuilder<Item> builder)
+    public void Configure(EntityTypeBuilder<ItemData> builder)
     {
         builder.HasKey(item => item.Id);
 
-        builder.HasData(new Item
+        builder.HasData(new ItemData
             {
                 Id = 1,
                 Name = "Gold",
                 Sprite = 8,
                 Type = ItemType.Currency
             },
-            new Item
+            new ItemData
             {
                 Id = 2,
                 Name = "Sword",

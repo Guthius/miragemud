@@ -14,9 +14,9 @@ internal sealed class GameDbContext(DbContextOptions<GameDbContext> options) : D
         modelBuilder.ApplyConfiguration(new RoomConfiguration());
     }
 
-    public DbSet<Item> Items => Set<Item>();
-    public DbSet<Npc> Npcs => Set<Npc>();
-    public DbSet<Shop> Shops => Set<Shop>();
-    public DbSet<Spell> Spells => Set<Spell>();
-    public DbSet<Room> Rooms => Set<Room>();
+    public DbSet<ItemData> Items => Set<ItemData>();
+    public DbSet<NpcData> Npcs => Set<NpcData>();
+    public DbSet<ShopData> Shops => Set<ShopData>();
+    public DbSet<SpellData> Spells => Set<SpellData>();
+    public DbSet<RoomData> Rooms => Set<RoomData>();
 }

@@ -3,14 +3,14 @@ using Microsoft.EntityFrameworkCore.Metadata.Builders;
 
 namespace MirageMud.Server.Features.Game.Entities.Configuration;
 
-internal sealed class ShopConfigration : IEntityTypeConfiguration<Shop>
+internal sealed class ShopConfigration : IEntityTypeConfiguration<ShopData>
 {
     private static readonly JsonSerializerOptions JsonSerializerOptions = new()
     {
         IncludeFields = true
     };
 
-    public void Configure(EntityTypeBuilder<Shop> builder)
+    public void Configure(EntityTypeBuilder<ShopData> builder)
     {
         builder.HasKey(shop => shop.Id);
 
@@ -20,7 +20,7 @@ internal sealed class ShopConfigration : IEntityTypeConfiguration<Shop>
                 inventory => JsonSerializer.Serialize(inventory, JsonSerializerOptions.Default),
                 json => JsonSerializer.Deserialize<ShopInventory>(json, JsonSerializerOptions)!);
 
-        builder.HasData(new Shop
+        builder.HasData(new ShopData
         {
             Id = 1,
             Name = "Repair Shop",
