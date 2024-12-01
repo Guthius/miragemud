@@ -35,6 +35,7 @@ internal sealed class MudClient : Connection<MudClient, MudClientState>
             state.Bind(PacketId.FromClient.GetCharacterTypes, HandleGetCharacterTypes);
             state.Bind<CreateCharacterPacket>(PacketId.FromClient.CreateCharacter, HandleCreateCharacter);
             state.Bind<DeleteCharacterPacket>(PacketId.FromClient.DeleteCharacter, HandleDeleteCharacter);
+            state.Bind<SelectCharacterPacket>(PacketId.FromClient.SelectCharacter, HandleSelectCharacter);
         });
     }
 
@@ -156,5 +157,18 @@ internal sealed class MudClient : Connection<MudClient, MudClientState>
         await _mediator.Send(new DeleteCharacterCommand(_characterSlots[packet.SlotIndex].CharacterId));
 
         SendAlert("Character has been deleted!");
+    }
+
+    private Task HandleSelectCharacter(SelectCharacterPacket packet)
+    {
+        if (packet.SlotIndex < 0 || packet.SlotIndex >= _characterSlots.Count)
+        {
+            SendAlert("Invalid character slot");
+            return Task.CompletedTask;
+        }
+        
+        // TODO: Implement me
+
+        return Task.CompletedTask;
     }
 }

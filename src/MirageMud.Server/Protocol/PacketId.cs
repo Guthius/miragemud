@@ -16,5 +16,6 @@ public static class PacketId
         public const int Login = 4;
         public const int CreateCharacter = 5;
         public const int DeleteCharacter = 6;
+        public const int SelectCharacter = 7;
     }
 }
