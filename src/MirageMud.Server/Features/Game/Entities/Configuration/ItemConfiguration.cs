@@ -7,5 +7,22 @@ internal sealed class ItemConfiguration : IEntityTypeConfiguration<Item>
     public void Configure(EntityTypeBuilder<Item> builder)
     {
         builder.HasKey(item => item.Id);
+
+        builder.HasData(new Item
+            {
+                Id = 1,
+                Name = "Gold",
+                Sprite = 8,
+                Type = ItemType.Currency
+            },
+            new Item
+            {
+                Id = 2,
+                Name = "Sword",
+                Sprite = 9,
+                Type = ItemType.Weapon,
+                Data1 = 50,
+                Data2 = 2,
+            });
     }
 }

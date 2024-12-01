@@ -19,5 +19,21 @@ internal sealed class ShopConfigration : IEntityTypeConfiguration<Shop>
             .HasConversion(
                 inventory => JsonSerializer.Serialize(inventory, JsonSerializerOptions.Default),
                 json => JsonSerializer.Deserialize<ShopInventory>(json, JsonSerializerOptions)!);
+
+        builder.HasData(new Shop
+        {
+            Id = 1,
+            Name = "Repair Shop",
+            FixesItems = true,
+            Inventory = ShopInventory.FromList([
+                new ShopInventory.Slot
+                {
+                    GiveItemId = 1,
+                    GiveQuantity = 50,
+                    GetItemId = 2,
+                    GetQuantity = 1
+                }
+            ])
+        });
     }
 }
