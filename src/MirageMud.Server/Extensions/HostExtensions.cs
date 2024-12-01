@@ -3,7 +3,7 @@ using Microsoft.Extensions.Hosting;
 
 namespace MirageMud.Server.Extensions;
 
-public static class HostExtensions
+internal static class HostExtensions
 {
     public static async Task EnsureDatabaseCreated<TContext>(this IHost app) where TContext : DbContext
     {

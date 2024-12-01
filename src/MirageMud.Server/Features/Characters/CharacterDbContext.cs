@@ -3,7 +3,7 @@ using MirageMud.Server.Features.Characters.Entities.Configuration;
 
 namespace MirageMud.Server.Features.Characters;
 
-public sealed class CharacterDbContext(DbContextOptions<CharacterDbContext> options) : DbContext(options)
+internal sealed class CharacterDbContext(DbContextOptions<CharacterDbContext> options) : DbContext(options)
 {
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {

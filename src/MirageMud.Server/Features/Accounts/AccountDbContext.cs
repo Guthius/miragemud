@@ -3,7 +3,7 @@ using MirageMud.Server.Features.Accounts.Entities.Configuration;
 
 namespace MirageMud.Server.Features.Accounts;
 
-public sealed class AccountDbContext(DbContextOptions<AccountDbContext> options) : DbContext(options)
+internal sealed class AccountDbContext(DbContextOptions<AccountDbContext> options) : DbContext(options)
 {
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
