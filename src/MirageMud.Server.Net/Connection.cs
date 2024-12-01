@@ -7,7 +7,7 @@ using MirageMud.Server.Net.Extensions;
 namespace MirageMud.Server.Net;
 
 public abstract class Connection<TClient, TClientState>(ILogger logger)
-    : IConnection where TClient : Connection<TClient, TClientState> where TClientState : Enum
+    : IConnection where TClient : Connection<TClient, TClientState> where TClientState : struct, Enum
 {
     private const int BufferSize = 4096;
     private const int PacketHeaderSize = 2;
@@ -20,10 +20,11 @@ public abstract class Connection<TClient, TClientState>(ILogger logger)
     private readonly ConcurrentQueue<byte[]> _sendBuffer = new();
     private Server<TClient, TClientState>? _server;
     private bool _closed;
-    private int _id;
     private Socket? _socket;
     private bool _sending;
     private TClientState _state;
+
+    public int Id { get; private set; }
 
     protected void SetState(TClientState state)
     {
@@ -105,13 +106,14 @@ public abstract class Connection<TClient, TClientState>(ILogger logger)
     internal void Run(Server<TClient, TClientState> server, int id, Socket socket)
     {
         _server = server;
-        _id = id;
         _socket = socket;
         _closed = false;
-
+        
+        Id = id;
+        
         var connectionState = new ConnectionState(socket, socket.GetRemoteIp(), ArrayPool<byte>.Shared.Rent(BufferSize));
 
-        logger.LogInformation("Connection established with {SocketAddr}", connectionState.SocketAddr);
+        logger.LogInformation("[{ConnectionId}] Connection established with {SocketAddr}", Id, connectionState.SocketAddr);
 
         OnConnected();
 
@@ -150,7 +152,7 @@ public abstract class Connection<TClient, TClientState>(ILogger logger)
         }
         catch (SocketException)
         {
-            logger.LogWarning("Connection with {SocketAddr} has been lost", state.SocketAddr);
+            logger.LogWarning("[{ConnectionId}] Connection with {SocketAddr} has been lost", Id, state.SocketAddr);
 
             Close();
         }
@@ -253,7 +255,7 @@ public abstract class Connection<TClient, TClientState>(ILogger logger)
             }
             finally
             {
-                logger.LogInformation("Connection with {SocketAddr} has been closed", _socket.GetRemoteIp());
+                logger.LogInformation("[{ConnectionId}] Connection with {SocketAddr} has been closed", Id, _socket.GetRemoteIp());
 
                 _socket.Close();
                 _socket = null;
@@ -262,7 +264,7 @@ public abstract class Connection<TClient, TClientState>(ILogger logger)
 
         OnDisconnected();
 
-        _server?.Unregister(_id);
+        _server?.Unregister(Id);
         _server = null;
     }
 }

@@ -11,7 +11,7 @@ namespace MirageMud.Server.Net;
 public sealed class Server<TClient, TClientState>(ILogger<Server<TClient, TClientState>> logger, IConfiguration configuration, IServiceProvider serviceProvider)
     : BackgroundService, IServer<TClient, TClientState>
     where TClient : Connection<TClient, TClientState>
-    where TClientState : Enum
+    where TClientState : struct, Enum
 {
     private const int DefaultPort = 7777;
     private const int DefaultMaxConnections = 100;
