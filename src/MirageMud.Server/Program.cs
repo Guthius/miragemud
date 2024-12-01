@@ -6,6 +6,7 @@ using MirageMud.Server;
 using MirageMud.Server.Extensions;
 using MirageMud.Server.Features.Accounts;
 using MirageMud.Server.Features.Characters;
+using MirageMud.Server.Features.Game;
 using MirageMud.Server.Net;
 using Serilog;
 
@@ -30,6 +31,13 @@ builder.Services.AddDbContext<CharacterDbContext>(
         .UseSnakeCaseNamingConvention(),
     ServiceLifetime.Singleton);
 
+builder.Services.AddDbContext<GameDbContext>(
+    options => options
+        .UseSqlite(
+            builder.Configuration.GetConnectionString("GameDataDb"))
+        .UseSnakeCaseNamingConvention(),
+    ServiceLifetime.Singleton);
+
 builder.Services.AddMemoryCache();
 builder.Services.AddMediatR(options => options.RegisterServicesFromAssembly(Assembly.GetExecutingAssembly()));
 
@@ -39,5 +47,6 @@ var app = builder.Build();
 
 await app.EnsureDatabaseCreated<AccountDbContext>();
 await app.EnsureDatabaseCreated<CharacterDbContext>();
+await app.EnsureDatabaseCreated<GameDbContext>();
 
 await app.RunAsync();
