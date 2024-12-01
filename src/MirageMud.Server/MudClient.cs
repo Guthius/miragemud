@@ -7,6 +7,7 @@ using MirageMud.Server.Features.Characters.Commands.DeleteCharacter;
 using MirageMud.Server.Features.Characters.Dtos;
 using MirageMud.Server.Features.Characters.Queries.GetCharactersByAccount;
 using MirageMud.Server.Features.Characters.Queries.GetCharacterTypes;
+using MirageMud.Server.Features.Game.Commands.JoinGame;
 using MirageMud.Server.Net;
 using MirageMud.Server.Protocol;
 using MirageMud.Server.Protocol.Packets.FromClient;
@@ -19,6 +20,7 @@ internal sealed class MudClient : Connection<MudClient, MudClientState>
     private readonly IMediator _mediator;
     private readonly List<CharacterSlotDto> _characterSlots = [];
     private Account? _account;
+    private int _playerId = -1;
 
     public MudClient(ILogger<MudClient> logger, IMediator mediator) : base(logger)
     {
@@ -159,16 +161,16 @@ internal sealed class MudClient : Connection<MudClient, MudClientState>
         SendAlert("Character has been deleted!");
     }
 
-    private Task HandleSelectCharacter(SelectCharacterPacket packet)
+    private async Task HandleSelectCharacter(SelectCharacterPacket packet)
     {
         if (packet.SlotIndex < 0 || packet.SlotIndex >= _characterSlots.Count)
         {
             SendAlert("Invalid character slot");
-            return Task.CompletedTask;
+            return;
         }
-        
-        // TODO: Implement me
 
-        return Task.CompletedTask;
+        _playerId = await _mediator.Send(new JoinGameCommand(this, _characterSlots[packet.SlotIndex].CharacterId));
+
+        SetState(MudClientState.InGame);
     }
 }
